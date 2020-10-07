@@ -14,7 +14,6 @@ driver.get(url)
 
 # TODO: Save All The Answers In A Text File
 def saveAnswers():
-
     FileName = input('Nome Do Arquivo: ')
 
     with open(f'MinhasRespostas\{FileName}.txt', 'wt', encoding='utf-8') as AnswersFile:
@@ -24,7 +23,6 @@ def saveAnswers():
 
 # Look For Answers In Brainly
 def GetAnswer(question):
-
     driver.switch_to.window(driver.window_handles[0])
 
     inputBox = driver.find_element_by_css_selector('#hero-search')
@@ -73,8 +71,8 @@ def GetAnswer(question):
     driver.close()
 
 
-# TODO: Check How Many Files Are In MyPDFs
-AllFiles = os.listdir('MyPDFs')
+# TODO: Check How Many Files Are In MeusPDFs
+AllFiles = os.listdir('MeusPDFs')
 
 PDFs = []
 
@@ -85,25 +83,38 @@ for File in AllFiles:
 
 # Loop The Script
 while True:
-
     os.system('cls')
     
     # TODO: Show All .pdf Files:
-    print(f"\nExistem {len(PDFs)} arquivos .pdf No Diretório '\\MyPDFs': \n")
+    print(f"\nExistem \033[1;32m{len(PDFs)}\033[m arquivos .pdf No Diretório '\033[1;31m\\MeusPDFs\033[m': \n")
 
-    print('-'*69)
-    print('|\033[1;34m{:^6}\033[m|\033[1;34m{:60}\033[m|'.format('id', 'Nome Do Arquivo'))
-    print('-'*69)
-    for index, pdf in enumerate(PDFs):
-        print('|\033[1;32m{:^6}\033[m|\033[1;32m{:60}\033[m|'.format(index, pdf))
-    print('-'*69)
+    if len(PDFs) != 0:
+        print('-'*69)
+        print('|\033[1;34m{:^6}\033[m|\033[1;34m{:60}\033[m|'.format('id', 'Nome Do Arquivo'))
+        print('-'*69)
 
-    pdfIndex = int(input('Index Do Arquivo A Ser Analizado: \033[1;32m'))
+        for index, pdf in enumerate(PDFs):
+            print('|\033[1;32m{:^6}\033[m|\033[1;32m{:60}\033[m|'.format(index, pdf))
+        
+        print('-'*69)
+
+        while True:
+            pdfIndex = int(input('Index Do Arquivo A Ser Analizado: \033[1;32m'))
+
+            if pdfIndex >= len(PDFs):
+                print('\n\033[mO Index Não Corresponde A Um Arquivo No Diretório')
+
+            else:
+                break
+
+    else:
+        print("Adicione Pelo Menos Um Arquivo .pdf No Diretório '\033[1;31m\\MeusPDFs\033[m' e Reinicie O Script")
+        break
 
     # Get All Questions From a File
     QuestionRegex = re.compile(r'(\d+\s\.\s \s\(.*?\).*?\.)', re.DOTALL)  
     print(f'\033[m\nLendo PDF: {PDFs[pdfIndex]}')
-    with open(f'MyPDFs\\{PDFs[pdfIndex]}', 'rb') as pdfFile:
+    with open(f'MeusPDFs\\{PDFs[pdfIndex]}', 'rb') as pdfFile:
         ReaderObject = PyPDF2.PdfFileReader(pdfFile)
         AllPages = []
 
@@ -118,12 +129,12 @@ while True:
 
 
     for index, Question in enumerate(AllQuestions):
-
         print('-'*50)
         print(f'\033[1;36mQuestão {index + 1}°\033[m')
         print('-'*50)
         print(f'\033[1;33m {Question}\033[m')
         print('-'*50)
+
         GetAnswer(Question)
 
     saveRes = input('Gostaria de Salvar As Respostar Em Um Arquivo De Texto? (S/N) ').lower().strip()
