@@ -8,4 +8,4 @@ pip install -r requirements.txt
 ```  
 Além Dos Pacotes Necessários Para O Scrip Funcionar, Você Precisará Instalar O Driver Utilizado Para Controlar A Interface Do Navegador e Adicionar O Seu Execútavel Na Variável PATH Do Windows.  
 O Navegador Utilizado É O Chrome, Abaixo Está O Link De Download Para O Driver.  
-![ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
+[ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
