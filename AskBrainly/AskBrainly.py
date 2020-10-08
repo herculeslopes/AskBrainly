@@ -1,8 +1,8 @@
 import re, PyPDF2, bs4, os
+from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-from time import sleep
 
 # Open The Browser And Goes To Brainly
 url = 'https://brainly.com.br'
@@ -12,11 +12,11 @@ driver = webdriver.Chrome()
 print('Entering brainly.com')
 driver.get(url)
 
-# TODO: Save All The Answers In A Text File
+# Save All The Answers In A Text File
 def saveAnswers():
     FileName = input('Nome Do Arquivo: ')
 
-    with open(f'MinhasRespostas\{FileName}.txt', 'wt', encoding='utf-8') as AnswersFile:
+    with open(f'MinhasRespostas\\{FileName}.txt', 'wt', encoding='utf-8') as AnswersFile:
         for index, answer in enumerate(AllAnswers):
             AnswersFile.write(f"Questão {index + 1}\n{'-'*50}\n{answer}\n{'-'*50}\n")
 
@@ -71,7 +71,7 @@ def GetAnswer(question):
     driver.close()
 
 
-# TODO: Check How Many Files Are In MeusPDFs
+# Check How Many Files Are In MeusPDFs
 AllFiles = os.listdir('MeusPDFs')
 
 PDFs = []
@@ -85,7 +85,7 @@ for File in AllFiles:
 while True:
     os.system('cls')
     
-    # TODO: Show All .pdf Files:
+    # Show All .pdf Files:
     print(f"\nExistem \033[1;32m{len(PDFs)}\033[m arquivos .pdf No Diretório '\033[1;31m\\MeusPDFs\033[m': \n")
 
     if len(PDFs) != 0:
@@ -113,9 +113,10 @@ while True:
 
     # Get All Questions From a File
     QuestionRegex = re.compile(r'(\d+\s\.\s \s\(.*?\).*?\.)', re.DOTALL)  
-    print(f'\033[m\nLendo PDF: {PDFs[pdfIndex]}')
+    print(f'\033[m\nLendo PDF: \033[1;32m{PDFs[pdfIndex]}\033[m')
     with open(f'MeusPDFs\\{PDFs[pdfIndex]}', 'rb') as pdfFile:
         ReaderObject = PyPDF2.PdfFileReader(pdfFile)
+        PdfInfo = ReaderObject.documentInfo
         AllPages = []
 
         for pageIndex in range(ReaderObject.numPages):
@@ -125,8 +126,28 @@ while True:
         TextFile = '\n'.join(AllPages)
         AllQuestions = QuestionRegex.findall(TextFile)
 
-    AllAnswers = []
+    sleep(0.5)
 
+    # TODO: Show PDF Info
+    print('\nPDF Info:\n')
+    print(f"Autor: \033[1;36m{PdfInfo['/Author']}\033[m")
+    print(f'Páginas: \033[1;32m{len(AllPages)}\033[m')
+    print(f'Questões: \033[1;32m{len(AllQuestions)}\033[m')
+    print()
+
+    sleep(1)
+
+    print('Inicializando A Busca', end='', flush=True)
+    sleep(1)
+    for i in range(0, 3):
+
+        print('.', end='', flush=True)
+        sleep(0.8)
+
+    print('\n')
+
+    # Start The Search
+    AllAnswers = []
 
     for index, Question in enumerate(AllQuestions):
         print('-'*50)
