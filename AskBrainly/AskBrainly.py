@@ -118,7 +118,7 @@ while True:
     (\d\.\d+\) .*?\.)? # Biomateriais e Biomecânica
     """
     # QuestionRegex = re.compile(r'(\d+\s\.\s \s\(.*?\).*?\.)', re.DOTALL)
-    QuestionRegex = re.compile(r'(\d+\s\.\s \s\(.*?\).*?\.)', re.VERBOSE | re.DOTALL)
+    QuestionRegex = re.compile(RegexString, re.VERBOSE | re.DOTALL)
 
     # Get All Questions From a File
     print(f'\033[m\nLendo PDF: \033[1;32m{PDFs[pdfIndex]}\033[m')
