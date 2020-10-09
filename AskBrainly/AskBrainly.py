@@ -28,7 +28,7 @@ def GetAnswer(question):
     inputBox = driver.find_element_by_css_selector('#hero-search')
     inputBox.clear()
     driver.execute_script("arguments[0].value = arguments[1]", inputBox, question)
-    
+
     searchButton = driver.find_element_by_css_selector('#__next > div > div.section--lnnYy.section--KhXv2 > div > div.sg-flex.sg-flex--full-width.sg-flex--column > div > form > div > div > button')
     ActionChains(driver).move_to_element(searchButton).key_down(Keys.CONTROL).click(searchButton).key_up(Keys.CONTROL).perform()
 
@@ -67,7 +67,7 @@ def GetAnswer(question):
     print()
     print(f'\033[1;33m{answer}\033[m')
     print()
-    
+
     driver.close()
 
 
@@ -84,7 +84,7 @@ for File in AllFiles:
 # Loop The Script
 while True:
     os.system('cls')
-    
+
     # Show All .pdf Files:
     print(f"\nExistem \033[1;32m{len(PDFs)}\033[m arquivos .pdf No Diretório '\033[1;31m\\MeusPDFs\033[m': \n")
 
@@ -95,7 +95,7 @@ while True:
 
         for index, pdf in enumerate(PDFs):
             print('|\033[1;32m{:^6}\033[m|\033[1;32m{:60}\033[m|'.format(index, pdf))
-        
+
         print('-'*69)
 
         while True:
@@ -111,8 +111,16 @@ while True:
         print("Adicione Pelo Menos Um Arquivo .pdf No Diretório '\033[1;31m\\MeusPDFs\033[m' e Reinicie O Script")
         break
 
+
+    # TODO: Create A Regex Object For Different Kinds Of Questions List:
+    RegexString = r"""
+    (\d+\s\.\s \s\(.*?\).*?\.)? # Provas De Vestibular
+    (\d\.\d+\) .*?\.)? # Biomateriais e Biomecânica
+    """
+    # QuestionRegex = re.compile(r'(\d+\s\.\s \s\(.*?\).*?\.)', re.DOTALL)
+    QuestionRegex = re.compile(r'(\d+\s\.\s \s\(.*?\).*?\.)', re.VERBOSE | re.DOTALL)
+
     # Get All Questions From a File
-    QuestionRegex = re.compile(r'(\d+\s\.\s \s\(.*?\).*?\.)', re.DOTALL)  
     print(f'\033[m\nLendo PDF: \033[1;32m{PDFs[pdfIndex]}\033[m')
     with open(f'MeusPDFs\\{PDFs[pdfIndex]}', 'rb') as pdfFile:
         ReaderObject = PyPDF2.PdfFileReader(pdfFile)
@@ -130,7 +138,13 @@ while True:
 
     # TODO: Show PDF Info
     print('\nPDF Info:\n')
-    print(f"Autor: \033[1;36m{PdfInfo['/Author']}\033[m")
+
+    try:
+        print(f"Autor: \033[1;36m{PdfInfo['/Author']}\033[m")
+
+    except KeyError:
+        print('O Arquivo Selecionado \033[1;32mNão\033[m] Registra Um Autor')
+
     print(f'Páginas: \033[1;32m{len(AllPages)}\033[m')
     print(f'Questões: \033[1;32m{len(AllQuestions)}\033[m')
     print()
