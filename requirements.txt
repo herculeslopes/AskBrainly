@@ -1,3 +1,4 @@
 BeautifulSoup4
 PyPDF2
 Selenium
+lxml
