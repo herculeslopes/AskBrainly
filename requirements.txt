@@ -1,4 +1,5 @@
 BeautifulSoup4
 PyPDF2
+textract
 Selenium
 lxml

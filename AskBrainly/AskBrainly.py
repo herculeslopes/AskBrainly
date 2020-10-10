@@ -1,4 +1,4 @@
-import re, PyPDF2, bs4, os
+import re, PyPDF2, textract, bs4, os
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -114,11 +114,19 @@ while True:
 
     # TODO: Create A Regex Object For Different Kinds Of Questions List:
     RegexString = r"""
-    (\d+\s\.\s \s\(.*?\).*?\.)? # Provas De Vestibular
-    (\d\.\d+\) .*?\.)? # Biomateriais e Biomecânica
+    # Questions That Have A Number Followed By A Dot, A Space, (With Something Inside)
+    
+    ((\d+\.\s\(.*?\).*?\.) # Provas De Vestibular
+    |
+    (\d\.\d+\)\s.*?\.)) #Biomateriais e Biomecânica
+
     """
+
+
+    # RegexString = r'(\d+\s\.\s\s\s\(.*?\).*?\.)'
+
     # QuestionRegex = re.compile(r'(\d+\s\.\s \s\(.*?\).*?\.)', re.DOTALL)
-    QuestionRegex = re.compile(RegexString, re.VERBOSE | re.DOTALL)
+    QuestionRegex = re.compile(RegexString, re.VERBOSE | re.DOTALL) # re.VERBOSE | re.DOTALL
 
     # Get All Questions From a File
     print(f'\033[m\nLendo PDF: \033[1;32m{PDFs[pdfIndex]}\033[m')
@@ -131,7 +139,8 @@ while True:
             page = ReaderObject.getPage(pageIndex).extractText()
             AllPages.append(page)
 
-        TextFile = '\n'.join(AllPages)
+        # TextFile = '\n'.join(AllPages)
+        TextFile = textract.process(f'MeusPDFs\\{PDFs[pdfIndex]}').decode('utf-8')
         AllQuestions = QuestionRegex.findall(TextFile)
 
     sleep(0.5)
@@ -143,7 +152,9 @@ while True:
         print(f"Autor: \033[1;36m{PdfInfo['/Author']}\033[m")
 
     except KeyError:
-        print('O Arquivo Selecionado \033[1;32mNão\033[m] Registra Um Autor')
+        print('O Arquivo Selecionado \033[1;31mNão\033[m Registra Um Autor!')
+
+    print()
 
     print(f'Páginas: \033[1;32m{len(AllPages)}\033[m')
     print(f'Questões: \033[1;32m{len(AllQuestions)}\033[m')
@@ -167,7 +178,7 @@ while True:
         print('-'*50)
         print(f'\033[1;36mQuestão {index + 1}°\033[m')
         print('-'*50)
-        print(f'\033[1;33m {Question}\033[m')
+        print(f'\033[1;33m {Question[0]}\033[m')
         print('-'*50)
 
         GetAnswer(Question)
