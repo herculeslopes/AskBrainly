@@ -196,3 +196,4 @@ while True:
 # Close Browser
 driver.switch_to.window(driver.window_handles[0])
 driver.close()
+
