@@ -18,7 +18,7 @@ def saveAnswers():
 
     with open(f'MinhasRespostas\\{FileName}.txt', 'wt', encoding='utf-8') as AnswersFile:
         for index, answer in enumerate(AllAnswers):
-            AnswersFile.write(f"Questão {index + 1}\n{'-'*50}\n{answer}\n{'-'*50}\n")
+            AnswersFile.write(f"• Questão {index + 1}\n\n{answer}\n\n\n")
 
 
 # Look For Answers In Brainly
@@ -39,17 +39,18 @@ def GetAnswer(question):
     source = driver.page_source
     soup = bs4.BeautifulSoup(source, 'lxml')
 
-    QuestionBox = soup.select('body > div.js-page-wrapper > div > div.sg-layout__container.js-main-container > div > div.js-react-search-results > div.sg-box.sg-box--light.sg-box--padding-m.sg-box--border-color-gray-secondary-lightest.sg-box--border.LayoutBox__box--1X9rF > div > div:nth-child(2)')
-    EachQuestion = QuestionBox[0].find_all('div', class_='sg-content-box sg-content-box--spaced-top-large')
+    QuestionBox = soup.select('#main-sg-layout-container > div.sg-layout__container.js-main-container > div > div.js-react-search-results > div > div > div.sg-box.sg-box--light.sg-box--padding-m.sg-box--border-color-gray-secondary-lightest.sg-box--border.LayoutBox__box--1X9rF > div > div:nth-child(2)') # body > div.js-page-wrapper > div > div.sg-layout__container.js-main-container > div > div.js-react-search-results > div.sg-box.sg-box--light.sg-box--padding-m.sg-box--border-color-gray-secondary-lightest.sg-box--border.LayoutBox__box--1X9rF > div > div:nth-child(2)
+    
+    EachQuestion = QuestionBox[0].find_all('div', class_='sg-flex sg-flex--full-width sg-flex--wrap sg-flex--margin-top-m') # sg-content-box sg-content-box--spaced-top-large    class="sg-flex sg-flex--full-width sg-flex--wrap sg-flex--margin-top-m"
 
-    VerifiedAnswers = QuestionBox[0].find_all('div', class_='sg-icon sg-icon--mint sg-icon--x32')
+    VerifiedAnswers = QuestionBox[0].find_all('div', class_='sg-icon sg-icon--mint sg-icon--x32 SearchItem-module__verifiedIcon--9-kRQ') #sg-icon sg-icon--mint sg-icon--x32
 
     print('\033[1;36mResultado Da Pesquisa\033[m\n')
     print(f'Total de Resultados Encontrados {len(EachQuestion)} ')
     print(f'Total de Resultados Verificados {len(VerifiedAnswers)}')
     print()
 
-    link = driver.find_element_by_css_selector('body > div.js-page-wrapper > div > div.sg-layout__container.js-main-container > div > div.js-react-search-results > div.sg-box.sg-box--light.sg-box--padding-m.sg-box--border-color-gray-secondary-lightest.sg-box--border.LayoutBox__box--1X9rF > div > div:nth-child(2) > div:nth-child(1) > div.sg-content-box__content > a')
+    link = driver.find_element_by_css_selector('#main-sg-layout-container > div.sg-layout__container.js-main-container > div > div.js-react-search-results > div > div > div.sg-box.sg-box--light.sg-box--padding-m.sg-box--border-color-gray-secondary-lightest.sg-box--border.LayoutBox__box--1X9rF > div > div:nth-child(2) > div:nth-child(1) > div') # body > div.js-page-wrapper > div > div.sg-layout__container.js-main-container > div > div.js-react-search-results > div.sg-box.sg-box--light.sg-box--padding-m.sg-box--border-color-gray-secondary-lightest.sg-box--border.LayoutBox__box--1X9rF > div > div:nth-child(2) > div:nth-child(1) > div.sg-content-box__content > a
     link.click()
 
     sleep(2)
@@ -58,7 +59,10 @@ def GetAnswer(question):
     AnswerSoup = bs4.BeautifulSoup(AnswerPage, 'lxml')
 
     AnswerElement = AnswerSoup.find('div', class_='brn-qpage-next-answer-box__content')
-    answer = AnswerElement.getText().strip()
+    try:
+        answer = AnswerElement.getText().strip()
+    except AttributeError:
+        answer = 'NÃO ENCONTRADA'
 
     AllAnswers.append(answer)
 
@@ -116,12 +120,17 @@ while True:
     RegexString = r"""
     # Questions That Have A Number Followed By A Dot, A Space, (With Something Inside)
     
-    ((\d+\.\s\(.*?\).*?\.) # Provas De Vestibular
-    |
-    (\d\.\d+\)\s.*?\.)) #Biomateriais e Biomecânica
+    (
+
+        (\d+\.\s\(.*?\).*?\.) # Provas De Vestibular
+        #|
+        #(\d+\.\s.*?\:) # (\d+\.\s.*\:)
+        #|
+        #(\d\.\d+\)\s.*?\.) # Biomateriais e Biomecânica
+
+    )
 
     """
-
 
     # RegexString = r'(\d+\s\.\s\s\s\(.*?\).*?\.)'
 
@@ -141,7 +150,16 @@ while True:
 
         # TextFile = '\n'.join(AllPages)
         TextFile = textract.process(f'MeusPDFs\\{PDFs[pdfIndex]}').decode('utf-8')
+    
         AllQuestions = QuestionRegex.findall(TextFile)
+
+
+    print(len(AllQuestions))
+
+    print('\n'*5)
+    for i in AllQuestions:
+        print(i[0])
+    print('\n'*5)
 
     sleep(0.5)
 
